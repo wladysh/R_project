@@ -1,11 +1,8 @@
 # ============================================================
-# Hierarchisches Clustering (Ward): Supermarkt-Beispiel (12 Produkte)
-# Ziel: 3 Schnitte zeigen (k = 2 / 4 / 6), um die Hierarchie zu erklären
-# Sprache: R + deutsche Kommentare
-# ============================================================
+# Hierarchisches Clustering (Ward): Supermarkt (12 Produkte)==========================
 
 # -------------------------
-# 1) Produkte + "Ground-Truth"-Kategorien (nur für Interpretation)
+# 1) Produkte + "Ground-Truth"-Kategorien 
 # -------------------------
 
 
