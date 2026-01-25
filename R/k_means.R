@@ -75,15 +75,15 @@ k_means <- function(X, K, max_iter = 100) {
 
 
 ## Test
-X <- rbind( matrix(rnorm(10, mean = 0, sd = 0.3), ncol = 2),
-            matrix(rnorm(10, mean = 0, sd = 0.3), ncol = 2),
-            matrix(rnorm(10, mean = 0, sd = 0.3), ncol = 2))
+#X <- rbind( matrix(rnorm(10, mean = 0, sd = 0.3), ncol = 2),
+#            matrix(rnorm(10, mean = 0, sd = 0.3), ncol = 2),
+#            matrix(rnorm(10, mean = 0, sd = 0.3), ncol = 2))
 
-result <- k_means(X, K = 3, max_iter = 50)
+#result <- k_means(X, K = 3, max_iter = 50)
 
-print(result$centers)
-print(result$clusters)
+#print(result$centers)
+#print(result$clusters)
 
-plot(X, col = result$clusters, pch = 19, main = "Test k-means")
-points(result$centers, col = 1:3, pch = 8, cex = 2)
+#plot(X, col = result$clusters, pch = 19, main = "Test k-means")
+#points(result$centers, col = 1:3, pch = 8, cex = 2)
 
