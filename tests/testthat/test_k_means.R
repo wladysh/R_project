@@ -12,7 +12,7 @@ test_that("k-means returns correct structure", {
   res <- k_means(X,K)
   
   expect_type(res, "list")
-  expect_name(res, c("centers", "clusters"))
+  expect_setequal(res, c("centers", "clusters"))
   expect_equal(nrow(res$centers), K)
   expect_equal(length(res$clusters), nrow(X))
 })
@@ -24,7 +24,7 @@ test_that("k-means changes centers", {
   K <- 2
   res <- k_means(X,K)
   
-  expect_false(all(res$centers[1,] == res$centers[2,]))
+  expect_false(anyDuplicated(res$centers))
 })
 
 #Test with known Clusters

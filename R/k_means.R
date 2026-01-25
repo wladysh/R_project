@@ -95,7 +95,7 @@ k_means <- function(X, K, max_iter = 100) {
   centers <- X[sample(1:nrow(X), K),, drop = FALSE]
   
   for(t in seq_len(max_iter)) {
-    # clusters <- assign_clusters_mean(X, centers)
+    clusters <- assign_clusters_mean(X, centers)
     new_centers <- update_centers(X, clusters, K)
     
     if(has_converged(centers, new_centers)) break
