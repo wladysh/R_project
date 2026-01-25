@@ -172,8 +172,22 @@ spectral_clustering <- function(
     U <- sc_row_normalize(U)
   }
   
-  # final clustering on embedding
-  km <- k_means(U, K = k, max_iter = kmeans_max_iter, tol = kmeans_tol, seed = seed, verbose = FALSE)
+  ### final clustering on embedding
+  ### km <- k_means(U, K = k, max_iter = kmeans_max_iter, tol = kmeans_tol, seed = seed, verbose = FALSE)
+  
+  # reproducibility even if k_means has no seed arg
+  if (!is.null(seed)) set.seed(seed)
+  
+  km_args <- list(U, K = k, max_iter = kmeans_max_iter)
+  
+  # pass optional args only if k_means supports them
+  km_formals <- names(formals(k_means))
+  if ("tol" %in% km_formals)     km_args$tol     <- kmeans_tol
+  if ("seed" %in% km_formals)    km_args$seed    <- seed
+  if ("verbose" %in% km_formals) km_args$verbose <- FALSE
+  
+  km <- do.call(k_means, km_args)
+  
   
   out <- list(
     clusters = km$clusters,
