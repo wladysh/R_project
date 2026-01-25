@@ -1,1 +1,5 @@
+<<<<<<< HEAD
 export(k_means)
+=======
+export(spectral_clustering)
+>>>>>>> d83903651e99190a751217f360441ca546590600
