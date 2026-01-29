@@ -2,7 +2,7 @@
 library(testthat)
 
 # Implementierungsdatei
-source("../k_medoids.R")
+source("../../R/k_medoids.R")
 
 
 # Beispiel-Test für die Distanzmatrix-Funktion
