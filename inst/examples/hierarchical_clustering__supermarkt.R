@@ -5,6 +5,14 @@
 # 1) Produkte + "Ground-Truth"-Kategorien 
 # -------------------------
 
+produkte <- c(
+  "Apfel", "Banane",        # Passt zu: Obst
+  "Karotte", "Spinat",      # Passt zu: Gemüse
+  "Milch", "Joghurt",       # Passt zu: Milchprodukte
+  "Lachs", "Hühnchen",      # Passt zu: Fleisch/Fisch
+  "Seife", "Shampoo",       # Passt zu: Hygiene
+  "Reiniger", "Spülmittel"  # Passt zu: Reinigung
+)
 
 kategorie <- c(
   rep("Obst", 2),
