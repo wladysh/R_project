@@ -108,6 +108,100 @@ sc_row_normalize <- function(U) {
 
 # --- public function ---
 
+#' Spectral clustering (Ng–Jordan–Weiss style embedding + k-means)
+#'
+#' Performs spectral clustering by constructing a graph from the input data,
+#' computing a graph Laplacian, taking the eigenvectors corresponding to the
+#' \eqn{k} smallest eigenvalues as an embedding, and running k-means in that
+#' embedded space.
+#'
+#' The pipeline is:
+#' \enumerate{
+#'   \item Compute squared Euclidean distances \eqn{D^2}.
+#'   \item Build an affinity matrix \eqn{W} (RBF / kNN / epsilon graph).
+#'   \item Build a Laplacian \eqn{L} (symmetric normalized / unnormalized / random-walk).
+#'   \item Compute the eigenvectors of \eqn{L} and take \eqn{k} smallest eigenpairs.
+#'   \item (Optional) Row-normalize the embedding.
+#'   \item Run \code{k_means()} on the embedding.
+#' }
+#'
+#' @param X Numeric matrix or data.frame of shape \eqn{n \times p} (rows = observations).
+#'   Must not contain missing values.
+#' @param k Integer number of clusters. Must satisfy \code{2 <= k <= nrow(X)}.
+#' @param affinity Character string specifying how to build the affinity matrix \eqn{W}.
+#'   One of \code{"rbf"}, \code{"knn"}, \code{"epsilon"}.
+#'   \itemize{
+#'     \item \code{"rbf"}: fully-connected RBF graph \eqn{W_{ij} = exp(-||x_i-x_j||^2 / (2 sigma^2))}.
+#'     \item \code{"knn"}: k-nearest-neighbor graph (union by default, or mutual if \code{mutual = TRUE}),
+#'       edges weighted with the same RBF kernel.
+#'     \item \code{"epsilon"}: epsilon-neighborhood graph with binary weights (1 if within \code{epsilon}).
+#'   }
+#' @param sigma Numeric bandwidth parameter for the RBF kernel (used for \code{"rbf"} and \code{"knn"}).
+#'   If \code{NULL}, it is chosen by a median-distance heuristic based on pairwise distances.
+#' @param knn_k Integer number of neighbors for \code{affinity = "knn"}.
+#' @param mutual Logical. If \code{TRUE} and \code{affinity = "knn"}, keep only mutual kNN edges
+#'   (intersection). If \code{FALSE}, use the union graph.
+#' @param epsilon Numeric radius for \code{affinity = "epsilon"} (required in that mode).
+#' @param laplacian Character string specifying the Laplacian type. One of
+#'   \code{"sym"}, \code{"unnormalized"}, \code{"rw"}.
+#'   \itemize{
+#'     \item \code{"unnormalized"}: \eqn{L = D - W}
+#'     \item \code{"sym"}: symmetric normalized Laplacian \eqn{L = I - D^{-1/2} W D^{-1/2}}
+#'     \item \code{"rw"}: random-walk Laplacian \eqn{L = I - D^{-1} W}
+#'   }
+#' @param normalize_rows Logical. If \code{TRUE}, row-normalize the eigenvector embedding before k-means
+#'   (common in Ng–Jordan–Weiss spectral clustering).
+#' @param kmeans_max_iter Integer maximum iterations for the internal \code{k_means()} call.
+#' @param kmeans_tol Numeric tolerance for \code{k_means()} if that implementation supports a \code{tol} argument.
+#' @param seed Optional integer random seed for reproducibility. If provided, \code{set.seed(seed)} is called
+#'   before k-means; additionally passed to \code{k_means()} if it supports a \code{seed} argument.
+#' @param verbose Logical. If \code{TRUE}, prints informational messages (e.g., chosen \code{sigma}).
+#' @param return_affinity Logical. If \code{TRUE}, also return the affinity matrix \eqn{W}.
+#'
+#' @return A list with components:
+#' \describe{
+#'   \item{clusters}{Integer vector of length \code{nrow(X)} with cluster assignments.}
+#'   \item{embedding}{Numeric matrix \eqn{n \times k} of spectral embedding (eigenvectors).}
+#'   \item{eigenvalues}{Numeric vector of length \code{k} with the selected eigenvalues of the Laplacian.}
+#'   \item{affinity}{(Optional) The affinity matrix \eqn{W} if \code{return_affinity = TRUE}.}
+#' }
+#'
+#' @examples
+#' set.seed(1)
+#' n <- 80
+#' X <- rbind(
+#'   matrix(rnorm(n * 2, mean = 0, sd = 0.4), ncol = 2),
+#'   matrix(rnorm(n * 2, mean = 3, sd = 0.4), ncol = 2)
+#' )
+#'
+#' res <- spectral_clustering(
+#'   X, k = 2,
+#'   affinity = "rbf",
+#'   laplacian = "sym",
+#'   seed = 123
+#' )
+#' table(res$clusters)
+#'
+#' @export
+spectral_clustering <- function(
+    X, k,
+    affinity = c("rbf", "knn", "epsilon"),
+    sigma = NULL,
+    knn_k = 10,
+    mutual = FALSE,
+    epsilon = NULL,
+    laplacian = c("sym", "unnormalized", "rw"),
+    normalize_rows = TRUE,
+    kmeans_max_iter = 100,
+    kmeans_tol = 1e-6,
+    seed = NULL,
+    verbose = FALSE,
+    return_affinity = FALSE
+) {
+  ...
+}
+
+
 spectral_clustering <- function(
     X, k,
     affinity = c("rbf", "knn", "epsilon"),
@@ -201,5 +295,3 @@ spectral_clustering <- function(
 
 #TO-DO:
 # - andere Funktionen in NAMESPACE exportieren
-# - Andere Projektteilnehmer bitten, den Namenskonflikt zu klären, 
-#   und anschließend den eigenen Code bearbeiten. 
