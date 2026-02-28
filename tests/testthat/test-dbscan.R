@@ -96,3 +96,17 @@ test_that("dbscan works with data.frame input", {
 
   expect_equal(length(res$clusters), nrow(x))
 })
+
+test_that("dbscan warns on large n ", {
+  # n = 1001 triggers warning if your limit is 1000
+  n <- 1001L
+  x <- matrix(seq_len(n), ncol = 1)
+
+  expect_warning(
+    res <- dbscan(x, eps = 1e-12, minPts = 2),
+    "Large dataset"
+  )
+
+  expect_true(all(res$clusters == 0L))
+  expect_true(all(res$core == FALSE))
+})

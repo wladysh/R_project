@@ -10,53 +10,52 @@
 ##        - assign border points to the current cluster
 ##	7) return labels + optional metadata (core flags, params)
 ##	8) OPTIONAL?
-##        - using in dist (method = "euclidean")?
-##				- alternative distance access (compute distances on demand)?
-##				- speed up neighbor search (avoid O(n^2) for large n)?
-##        - return extra stats (n_clusters, noise_count, cluster_sizes)?
-##        - documentation for dbscan (roxygen2 / man/*.Rd); helpers?
+##        - using in dist (method = "euclidean")? (похуй, оставляем?)
+##        - return extra stats (n_clusters, noise_count, cluster_sizes)
+##        - S3 print, call, plot
 ##        - vignette for DBSCAN and OPTICS
 ##        - example for DBSCAN and OPTICS
-##        - OPTICS
-##        - README.md?
-
-## Helpers:
-
-db_dist_matrix <- function(x){
-  # compute distance between all points and check validate matrix on input
-  stopifnot(
-    "x must be a matrix or data.frame" = is.matrix(x) || is.data.frame(x),
-    "x must not contain NA values" = !anyNA(x)
-  )
-
-  df <- as.data.frame(x)
-  is_num <- sapply(df, is.numeric)
-  stopifnot("all columns (cords) of x must be numeric" = all(is_num))
-
-  x <- as.matrix(df)
-  n <- nrow(x)
-  d_mat <- matrix(0, n, n)
-
-  for (i in seq_len(n)) {
-    for (j in seq_len(n)) {
-      d_mat[i, j] <- sqrt(sum((x[i, ] - x[j, ])^2))
-    }
-  }
-
-  d_mat
-}
-
-db_neighbors_eps <- function(d_mat, i, eps){
-  # indices of all points within eps (including i itself)
-  which(d_mat[i, ] <= eps)
-}
+##        - the possibility of refusing surgery in case of high input
+##        - README.md
 
 
 ## Functions:
 
+#' DBSCAN clustering
+#'
+#' Density-based clustering that finds dense groups of points and marks outliers
+#' as noise. The number of clusters is not fixed in advance.
+#'
+#' @param x Numeric matrix or data frame (n*m). Rows are points.
+#' @param eps Single numeric value, that > 0. Neighborhood radius.
+#' @param minPts Single integer >= 1. Minimum number of points in the eps neighborhood
+#' for a core point, including the point itself.
+#'
+#' @return A list with:
+#' \describe{
+#'   \item{clusters}{Integer vector of length n. 0 = noise, 1..K = cluster id.}
+#'   \item{core}{Logical vector of length n. TRUE for core points.}
+#'   \item{eps}{The eps used.}
+#'   \item{minPts}{The minPts used.}
+#' }
+#'
+#' @details
+#' For large \code{n}, the function may warn because it computes a full distance matrix (O(n^2)).
+#' 
+#' @examples
+#' x <- matrix(c(
+#'   0, 0,
+#'   0.1, 0,
+#'   0, 0.1,
+#'   5, 5
+#' ), ncol = 2, byrow = TRUE)
+#' res <- dbscan(x, eps = 0.2, minPts = 3)
+#' table(res$clusters)
+#'
+#' @export
+
 dbscan <- function(x, eps, minPts){
   # checks
-
   if (!is.numeric(eps) || length(eps) != 1 || is.na(eps) || eps <= 0){
     stop("eps must be a single numeric value > 0")
   }
@@ -65,6 +64,8 @@ dbscan <- function(x, eps, minPts){
   }
   minPts <- as.integer(minPts) # if minPts was double
 
+  n <- if (is.matrix(x) || is.data.frame(x)) nrow(x) else NA_integer_
+  db_warn_large_n(n)
   dist_mat <- db_dist_matrix(x)
   n <- nrow(dist_mat)
 
@@ -100,7 +101,7 @@ dbscan <- function(x, eps, minPts){
       j <- queue[1]
       queue <- queue[-1]
 
-      if (!visited[j]){
+      if (!visited[j] == TRUE){
         visited[j] <- TRUE
         neigh_j <- db_neighbors_eps(dist_mat, j, eps)
 
