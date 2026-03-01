@@ -6,7 +6,11 @@ test_that("optics returns correct structure and types", {
   res <- optics(x, eps = 0.5, minPts = 3)
 
   expect_type(res, "list")
-  expect_named(res, c("order", "reachability", "core_dist", "eps", "minPts"))
+  expect_s3_class(res, "haufenR_optics")
+  expect_named(res, c(
+    "order", "reachability", "core_dist", "eps", "minPts",
+    "core_count", "start_points_count", "n"
+  ))
 
   expect_type(res$order, "integer")
   expect_type(res$reachability, "double")
@@ -15,12 +19,23 @@ test_that("optics returns correct structure and types", {
   expect_equal(length(res$order), nrow(x))
   expect_equal(length(res$reachability), nrow(x))
   expect_equal(length(res$core_dist), nrow(x))
+  expect_type(res$core_count, "integer")
+  expect_type(res$start_points_count, "integer")
+  expect_type(res$n, "integer")
 
   # order should be a permutation of 1...n
   expect_equal(sort(res$order), seq_len(nrow(x)))
 
   expect_true(all(res$reachability >= 0 | is.infinite(res$reachability)))
   expect_true(all(res$core_dist >= 0 | is.infinite(res$core_dist)))
+
+  # consistency of the new summary fields
+  expect_equal(res$n, as.integer(nrow(x)))
+  expect_equal(res$core_count, as.integer(sum(is.finite(res$core_dist))))
+  expect_equal(res$start_points_count, as.integer(sum(is.infinite(res$reachability))))
+
+  # print should use S3 method
+  expect_output(print(res), "OPTICS result")
 
   expect_equal(res$eps, 0.5)
   expect_equal(res$minPts, as.integer(3))

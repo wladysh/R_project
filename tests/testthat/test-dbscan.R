@@ -6,16 +6,36 @@ test_that("dbscan returns correct structure and types", {
   res <- dbscan(x, eps = 0.5, minPts = 3)
 
   expect_type(res, "list")
-  expect_named(res, c("clusters", "core", "eps", "minPts"))
+  expect_s3_class(res, "haufenR_dbscan")
+  expect_named(res, c(
+    "clusters", "core", "eps", "minPts",
+    "clusters_count", "noise_count", "cluster_sizes",
+    "core_count", "border_count", "n"
+  ))
 
   expect_type(res$clusters, "integer")
   expect_type(res$core, "logical")
+  expect_type(res$clusters_count, "integer")
+  expect_type(res$noise_count, "integer")
+  expect_type(res$cluster_sizes, "integer")
+  expect_type(res$core_count, "integer")
+  expect_type(res$border_count, "integer")
+  expect_type(res$n, "integer")
 
   expect_equal(length(res$clusters), nrow(x))
   expect_equal(length(res$core), nrow(x))
 
   expect_true(all(!is.na(res$clusters)))
   expect_true(all(res$clusters >= 0L))
+
+  # consistency of the new summary fields
+  expect_equal(res$n, as.integer(nrow(x)))
+  expect_equal(res$noise_count, as.integer(sum(res$clusters == 0L)))
+  expect_equal(res$core_count, as.integer(sum(res$core)))
+  expect_equal(res$border_count, as.integer(sum(res$clusters != 0L & !res$core)))
+
+  # print should use S3 method
+  expect_output(print(res), "DBSCAN result")
 
   expect_equal(res$eps, 0.5)
   expect_equal(res$minPts, as.integer(3))

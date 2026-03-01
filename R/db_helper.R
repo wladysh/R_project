@@ -67,3 +67,42 @@ db_warn_large_n <- function(
 
   invisible(TRUE)
 }
+
+print.haufenR_dbscan <- function(x, ...){
+  # console output for DBSCAN results
+  cat("DBSCAN result\n")
+
+  # basic settings + counts
+  cat("n:       ", x$n, "\n", sep = "")
+  cat("eps:     ", x$eps, "\n", sep = "")
+  cat("minPts:  ", x$minPts, "\n", sep = "")
+  cat("clusters:", x$clusters_count, "\n", sep = "")
+  cat("noise:   ", x$noise_count, "\n", sep = "")
+  cat("core:    ", x$core_count, "\n", sep = "")
+  cat("border:  ", x$border_count, "\n", sep = "")
+
+  # cluster sizes or empty
+  if (length(x$cluster_sizes) > 0){
+    nm <- attr(x$cluster_sizes, "names")
+    pairs <- paste(nm, x$cluster_sizes, sep = "=")
+
+    cat("sizes:   ", paste(pairs, collapse = ", "), "\n", sep = "")
+  } else{
+    cat("sizes:   -\n")
+  }
+
+  invisible(x)
+}
+
+print.haufenR_optics <- function(x, ...){
+  # console output for OPTICS results
+  cat("OPTICS result\n")
+
+  cat("n:     ", x$n, "\n", sep = "")
+  cat("eps:   ", x$eps, "\n", sep = "")
+  cat("minPts:", x$minPts, "\n", sep = "")
+  cat("core:  ", x$core_count, "\n", sep = "")
+  cat("starts:", x$start_points_count, "\n", sep = "")
+
+  invisible(x)
+}

@@ -22,6 +22,9 @@ A list with:
   \item{core_dist}{Numeric vector length n. Distance to the minPts neighbor within eps, else Inf.}
   \item{eps}{The eps used.}
   \item{minPts}{The minPts used.}
+  \item{core_count}{Number of core points.}
+  \item{start_points_count}{Number of points with Inf reachability.}
+  \item{n}{Number of input points.}
 }
 }
 \description{

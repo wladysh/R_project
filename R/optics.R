@@ -29,6 +29,9 @@
 #'   \item{core_dist}{Numeric vector length n. Distance to the minPts neighbor within eps, else Inf.}
 #'   \item{eps}{The eps used.}
 #'   \item{minPts}{The minPts used.}
+#'   \item{core_count}{Number of core points.}
+#'   \item{start_points_count}{Number of points with Inf reachability.}
+#'   \item{n}{Number of input points.}
 #' }
 #'
 #' @details
@@ -131,11 +134,20 @@ optics <- function(x, eps, minPts){
     }
   }
 
-  list(
+  core_count <- sum(is.finite(core_dist))
+  start_points_count <- sum(is.infinite(reachability))
+
+  res <- list(
     order = order,
     reachability = reachability,
     core_dist = core_dist,
     eps = eps,
-    minPts = minPts
+    minPts = minPts,
+    core_count = as.integer(core_count),
+    start_points_count = as.integer(start_points_count),
+    n = as.integer(n)
   )
+
+  class(res) <- "haufenR_optics"
+  res
 }

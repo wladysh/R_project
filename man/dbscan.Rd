@@ -21,6 +21,12 @@ A list with:
   \item{core}{Logical vector of length n. TRUE for core points.}
   \item{eps}{The eps used.}
   \item{minPts}{The minPts used.}
+  \item{clusters_count}{Number of clusters found.}
+  \item{noise_count}{Number of noise points.}
+  \item{cluster_sizes}{Named integer vector: sizes of clusters.}
+  \item{core_count}{Number of core points.}
+  \item{border_count}{Number of border points.}
+  \item{n}{Number of input points.}
 }
 }
 \description{

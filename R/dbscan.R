@@ -10,8 +10,6 @@
 ##        - assign border points to the current cluster
 ##	7) return labels + optional metadata (core flags, params)
 ##	8) OPTIONAL?
-##        - using in dist (method = "euclidean")? (похуй, оставляем?)
-##        - return extra stats (n_clusters, noise_count, cluster_sizes)
 ##        - S3 print, call, plot
 ##        - vignette for DBSCAN and OPTICS
 ##        - example for DBSCAN and OPTICS
@@ -37,6 +35,12 @@
 #'   \item{core}{Logical vector of length n. TRUE for core points.}
 #'   \item{eps}{The eps used.}
 #'   \item{minPts}{The minPts used.}
+#'   \item{clusters_count}{Number of clusters found.}
+#'   \item{noise_count}{Number of noise points.}
+#'   \item{cluster_sizes}{Named integer vector: sizes of clusters.}
+#'   \item{core_count}{Number of core points.}
+#'   \item{border_count}{Number of border points.}
+#'   \item{n}{Number of input points.}
 #' }
 #'
 #' @details
@@ -119,10 +123,27 @@ dbscan <- function(x, eps, minPts){
     }
   }
 
-  list(
+  noise_count <- sum(clusters == 0L)
+
+  tab <- table(clusters[clusters > 0L])
+  cluster_sizes <- structure(as.integer(tab), names = attr(tab, "names"))
+
+  core_count <- sum(core)
+  border_count <- sum(clusters != 0L & !core == TRUE)
+
+  res <- list(
     clusters = clusters,
     core = core,
     eps = eps,
-    minPts = minPts
+    minPts = minPts,
+    clusters_count = as.integer(cluster_id),
+    noise_count = as.integer(noise_count),
+    cluster_sizes = cluster_sizes,
+    core_count = as.integer(core_count),
+    border_count = as.integer(border_count),
+    n = as.integer(n)
   )
+
+  class(res) <- "haufenR_dbscan"
+  res
 }
