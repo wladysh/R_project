@@ -1,42 +1,34 @@
-## Implementing our own k-means function with chapter 9.1 (Richter)
+## k_means
+## Pipeline:
+## 1) Squared euclidean distance function to calculate the distance of the Data Points to the centers (computationally cheaper)
+## 2) Assign the Data Points to the nearest Center
+## 3) Update the Center to the mean of the Data Points inside
+## 4) Test if the algorithm has converged
+## 5) Calculate the total within-cluster sum of squares
 
+## --- Helpers ---
 
-## Helpers ####################################################################
-
-#Distance
-#' Compute euclidean distance
-#' @param x Numeric Vector
-#' @param centers Numeric Vector
-#' @return Numeric euclidean distances between x and centers as vector
-euclidean_distance <- function(x, centers) {
-  sqrt(rowSums((centers-x)^2)) 
+# Distance
+mn_sq_euclidean_distance <- function(X, centers) {
+  rowSums((centers - X)^2) 
 }
 
 
-#Assign
-#' Assign the Clusters
-#' @param X Matrix n x d
-#' @param centers Matrix K x d
-#' @return Integer Vector of cluster assignments
-assign_clusters_mean <- function(X, centers) {
-  n <- nrow(X) 
+# Assign the Clusters
+mn_assign_clusters <- function(X, centers) {
+  n <- nrow(X)
   clusters <- integer(n)
   
   for(i in seq_len(n)) {
-    clusters[i] <- which.min(euclidean_distance(X[i,], centers))
+    clusters[i] <- which.min(mn_sq_euclidean_distance(X[i,], centers))
   }
   
   clusters
 }
 
 
-#Update
-#' Update the Centers
-#' @param X Matrix n x d
-#' @param clusters Integer Vector of Cluster assignments
-#' @param K Number of Clusters
-#' @return Matrix K x d with updated Cluster Centers
-update_centers <- function(X, clusters, K) {
+# Update the Centers
+mn_update_centers <- function(X, clusters, K) {
   d <- ncol(X)
   centers <- matrix(0, nrow = K, ncol = d)
   
@@ -55,31 +47,43 @@ update_centers <- function(X, clusters, K) {
 }
 
 
-#Converged
-#' Test if converged
-#' @param old_centers previous centers
-#' @param new_centers current centers
-#' @param tol Tolerance for converged
-#' @return Logical, true if converged
-has_converged <- function(old_centers, new_centers, tol = 1e-6) {
-  max(abs(new_centers - old_centers)) < tol
+# Test if converged
+mn_has_converged <- function(old_centers, new_centers, tol = 1e-6) {
+  sum((new_centers - old_centers)^2) < tol
+}
+
+# Total within-cluster sum of squares
+mn_tot_withinss <- function(X, clusters, centers){
+  sum(sapply(1:nrow(centers), function(k) {
+    sum(rowSums((X[clusters == k, , drop = FALSE] - centers[k, ])^2))
+  }))
 }
 
 
-## k-means #####################################################################
+## --- main function ---
+
 #' k-means algorithm
+#' 
+#' This function implements the k-means clustering algorithm. (Chapter 9.1, Stefan Richter - Statistisches und maschinelles Lernen)
+#' It supports multiple random starts to find a better local minimum.
+#' 
 #' @param X Numeric matrix or data frame of size n x d
 #' @param K Number of Clusters
-#' @param max_iter Maximum number of iterations
-#' @return A list with cluster assignments and cluster centers
+#' @param max_iter Maximum number of iterations (default 100)
+#' @param tol Convergence tolerance (default 1e-6)
+#' @param nstart Number of random starts (default 10)
+#' @return A list with following elements:
+#' \item{centers}{Matrix of cluster centers (K x d)}
+#' \item{clusters}{Vector of cluster assignments for each observation}
+#' \item{iter}{Number of iterations until convergence}
+#' \item{tot_withinss}{Total within-cluster sum of squares}
 #' @export
-k_means <- function(X, K, max_iter = 100) {
+k_means <- function(X, K, max_iter = 100, tol = 1e-6, nstart = 10) {
   
-  #Test if correct inputs
+  # Input checks
   if(!is.matrix(X) && !is.data.frame(X)) {
     stop("X must be a matrix or data frame")
   }
-  
   X <- as.matrix(X)
   
   if(!is.numeric(X)) {
@@ -87,22 +91,35 @@ k_means <- function(X, K, max_iter = 100) {
   }
   
   if(!(is.numeric(K) && length(K) == 1 && K > 0 && K <= nrow(X))) {
-    stop("K does not work")
+    stop("K invalid")
   }
   K <- as.integer(K)
   
-  #Calculating k-means
-  centers <- X[sample(1:nrow(X), K),, drop = FALSE]
+  best_withinss <- Inf
+  best_result <- NULL
   
-  for(t in seq_len(max_iter)) {
-    clusters <- assign_clusters_mean(X, centers)
-    new_centers <- update_centers(X, clusters, K)
+  for(start in seq_len(nstart)) {
+    centers <- X[sample(1:nrow(X), K),, drop = FALSE]
     
-    if(has_converged(centers, new_centers)) break
+    for(t in seq_len(max_iter)) {
+      clusters <- mn_assign_clusters(X, centers)
+      new_centers <- mn_update_centers(X, clusters, K)
+      
+      if(mn_has_converged(centers, new_centers, tol)) break
+      
+      centers <- new_centers
+    }
     
-    centers <- new_centers
+    tot_withinss <- mn_tot_withinss(X, clusters, centers)
+    if(tot_withinss < best_withinss) {
+      best_withinss <- tot_withinss
+      best_result <- list(centers = centers,
+                          clusters = clusters,
+                          iter = t,
+                          tot_withinss = tot_withinss)
+    }
+    
   }
   
-  list(centers = centers,
-       clusters = clusters)
+  best_result
 }

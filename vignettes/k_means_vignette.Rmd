@@ -19,43 +19,108 @@ library(haufenR)
 ```
 
 ```{r example-data-1}
-#Random Clusters
+# --- Example 1: Random Clusters ---
+
 set.seed(123)
+# Generate 3 random clusters 
 X <- rbind(matrix(rnorm(50*2, mean = 0), ncol = 2),
            matrix(rnorm(50*2, mean = 3), ncol = 2),
            matrix(rnorm(50*2, mean = 6), ncol = 2))
+
+# Inspect first few rows
 head(X)
-set.seed(123)
-res <- k_means(X, K = 3)
+
+# Apply k_means from haufenR
+res <- k_means(X, K = 3, max_iter = 100, nstart = 5)
+
+# Cluster centers
 res$centers
+
+# Cluster assignments
+cat("Cluster assignment counts:\n")
 table(res$clusters)
 
+# Visualize
 plot(X, col = res$clusters, pch = 19, main = "k-means Cluster")
-points(res$centers, col = 1:3, pch = 8, cex = 2)
+points(res$centers, col = 1:3, pch = 8, cex = 2) # Mark centers
 ```
 
 ```{r example-data-2}
-## Comparison to kmeans
+# --- Example 2: Comparison with R's kmeans ---
+
 set.seed(123)
+# Apply kmeans from R
 res_r <- kmeans(X, centers=3)
-par(mfrow=c(1,2))
 
+par(mfrow = c(1,2)) #Side-by-side plotting
 
-res$centers
-res_r$centers #Same (with same seed)
-
+# Visualize own k_mean
 plot(X, col = res$clusters, pch = 19, main = "Own k_means")
 points(res$centers, col = 1:3, pch = 8, cex = 2)
 
-plot(X, col = res$clusters, pch = 19, main = "R k_means")
+# Visualize R's built in kmean
+plot(X, col = res_r$cluster, pch = 19, main = "R kmeans")
 points(res_r$centers, col = 1:3, pch = 8, cex = 2)
+
+# Compare centers
+cat("Centers of own implementation:\n")
+res$centers
+cat("Centers of R's implementation:\n")
+res_r$centers #Same centers (with same seed)
+
+par(mfrow = c(1,1)) #Reset plotting
+
+## Our k_means is doing the same as the kmeans-function in R
 ```
 
 ```{r example-data-3}
+# --- Example 3: Another dataset---
+
+set.seed(42)
 X2 <- rbind(matrix(rnorm(302, mean = 0), ncol = 2),
            matrix(rnorm(502, mean = 5), ncol = 2))
-res2 <- k_means(X, K = 2)
-plot(X2, col = res2$clusters, pch=19)
+res2 <- k_means(X2, K = 2)
+
+# Plot
+plot(X2, col = res2$clusters, pch=19, cex = 0.2)
 points(res2$centers, col = 1:2, pch = 8, cex = 2)
 
+```
+
+```{r example-data-4}
+# --- Example 4: Edge case with a single point ---
+
+single_point <- matrix(c(1,2), nrow = 1)
+res_single <- k_means(single_point, K = 1)
+
+res_single$centers
+res_single$clusters
+
+plot(single_point, col = res_single$clusters, pch = 19, main = "k-means Cluster")
+points(res_single$centers, col = 1, pch = 8, cex = 2)
+```
+
+```{r example-data-5}
+# --- Example 5: Demonstrating multiple random starts improves within-cluster of sum squares ---
+
+set.seed(123)
+X3 <- rbind(matrix(rnorm(50*2, mean = 0, sd = 1.5), ncol = 2),
+           matrix(rnorm(50*2, mean = 2, sd = 1.5), ncol = 2),
+           matrix(rnorm(50*2, mean = 4, sd = 1.5), ncol = 2))
+res1 <- k_means(X3, K = 3, nstart = 1)
+res5 <- k_means(X3, K = 3, nstart = 5)
+
+res1$tot_withinss
+res5$tot_withinss
+
+## With multiple random starts the algorithm can find a better clustering solution with a smaller total within-cluster sum of squares
+```
+
+```{r example-data-6}
+# --- Example 6: Invalid input ---
+invalid_X <- matrix(c("a", "b", "c", "d"), ncol = 2)
+tryCatch(
+  k_means(invalid_X, K = 2),
+  error = function(e) message("Caught expected error: ", e$message)
+)
 ```
