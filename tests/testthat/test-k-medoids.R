@@ -8,7 +8,7 @@ source("../../R/k_medoids.R")
 # Beispiel-Test für die Distanzmatrix-Funktion
 test_that("dist_matrix funktioniert korrekt", {
   x <- matrix(c(1, 2, 3, 4), nrow = 2)
-  dist_mat <- dist_matrix(x)
+  dist_mat <- md_dist_matrix(x)
   
   expect_equal(dim(dist_mat), c(2, 2))  # Die Distanzmatrix muss 2x2 sein
   expect_true(all(dist_mat >= 0))  # Alle Distanzen sollten >= 0 sein
@@ -19,7 +19,7 @@ test_that("init_medoids wählt k Medoids", {
   set.seed(42)
   n <- 10
   k <- 3
-  medoids <- init_medoids(k, n)
+  medoids <- md_init_medoids(k, n)
   
   expect_equal(length(medoids), k)  # Anzahl der Medoids muss k sein
   expect_true(all(medoids <= n))  # Medoid-Indizes dürfen nicht größer als n sein
