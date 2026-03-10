@@ -4,18 +4,27 @@
 \alias{k_means}
 \title{k-means algorithm}
 \usage{
-k_means(X, K, max_iter = 100)
+k_means(X, K, max_iter = 100, tol = 1e-06, nstart = 10)
 }
 \arguments{
 \item{X}{Numeric matrix or data frame of size n x d}
 
 \item{K}{Number of Clusters}
 
-\item{max_iter}{Maximum number of iterations}
+\item{max_iter}{Maximum number of iterations (default 100)}
+
+\item{tol}{Convergence tolerance (default 1e-6)}
+
+\item{nstart}{Number of random starts (default 10)}
 }
 \value{
-A list with cluster assignments and cluster centers
+A list with following elements:
+\item{centers}{Matrix of cluster centers (K x d)}
+\item{clusters}{Vector of cluster assignments for each observation}
+\item{iter}{Number of iterations until convergence}
+\item{tot_withinss}{Total within-cluster sum of squares}
 }
 \description{
-k-means algorithm
+This function implements the k-means clustering algorithm. (Chapter 9.1, Stefan Richter - Statistisches und maschinelles Lernen)
+It supports multiple random starts to find a better local minimum.
 }

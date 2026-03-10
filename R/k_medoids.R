@@ -1,3 +1,12 @@
+# k_medoids
+# Pipeline:
+# 1) Compute the pairwise distance matrix of all data points
+# 2) Randomly initialize k medoids
+# 3) Assign each data point to the nearest medoid
+# 4) Evaluate swaps between medoids and non-medoids
+# 5) Accept the swap if it reduces the total clustering cost
+# 6) Repeat until no improvement or max_iter is reached
+
 md_dist_matrix <- function(x) {
   
   # x wird hier überpüft (muss eine Matrix oder Data frame sein, keine NAs, nur Zahlen)
@@ -60,7 +69,30 @@ md_swap <- function(medoids, dist_mat) {
   best_medoids
 }
 
-
+#' K-Medoids clustering algorithm
+#'
+#' This function partitions a dataset into k clusters by selecting k
+#' representative data points (medoids). Each observation is assigned
+#' to the cluster of the nearest medoid based on the Euclidean distance.
+#'
+#' @param x Numeric matrix or data frame containing the dataset.
+#' @param k Number of clusters (medoids).
+#' @param max_iter Maximum number of iterations (default = 100).
+#'
+#' @return
+#' A list with the following components:
+#'
+#' \item{medoids}{Indices of the final medoids}
+#' \item{clusters}{Cluster assignment for each observation}
+#' \item{iterations}{Number of iterations performed}
+#'
+#' @examples
+#' set.seed(1)
+#' x <- matrix(rnorm(100), ncol = 2)
+#' res <- k_medoids(x, k = 3)
+#' print(res$clusters)
+#' 
+#' @export
 k_medoids <- function(x, k, max_iter=100) {
   n <- nrow(x) # Anzahl der Punkte
   
@@ -79,6 +111,3 @@ k_medoids <- function(x, k, max_iter=100) {
   clusters <- md_assign_clusters(dist_mat, medoids)
   list(medoids = medoids, clusters = clusters, iterations = iter)
 }
-
-# TODO: Roxygen-Dokumentation ergänzen
-
