@@ -2,14 +2,14 @@
 % Please edit documentation in R/k_means.R
 \name{k_means}
 \alias{k_means}
-\title{k-means algorithm}
+\title{K-Means clustering algorithm}
 \usage{
 k_means(X, K, max_iter = 100, tol = 1e-06, nstart = 10)
 }
 \arguments{
-\item{X}{Numeric matrix or data frame of size n x d}
+\item{X}{Numeric matrix or data.frame containing the dataset of size n x d}
 
-\item{K}{Number of Clusters}
+\item{K}{Number of clusters}
 
 \item{max_iter}{Maximum number of iterations (default 100)}
 
@@ -25,6 +25,21 @@ A list with following elements:
 \item{tot_withinss}{Total within-cluster sum of squares}
 }
 \description{
-This function implements the k-means clustering algorithm. (Chapter 9.1, Stefan Richter - Statistisches und maschinelles Lernen)
+This is an implementation of the k-means clustering algorithm. (see Chapter 9.1, Stefan Richter - Statistisches und maschinelles Lernen)
+It partitions a numeric data set into K clusters by iteratively assigning points to the nearest cluster center and updating the centers until convergence.
 It supports multiple random starts to find a better local minimum.
+}
+\examples{
+set.seed(1)
+X <- rbind(matrix(rnorm(10*2, mean = 0), ncol = 2),
+           matrix(rnorm(10*2, mean = 5), ncol = 2))
+           
+res <- k_means(X, K = 2)
+res$centers
+res$clusters
+
+#Visualize clusters and centers
+plot(X, col = res$clusters, pch = 19)
+points(res$centers, col = 1:2, pch = 8)
+
 }

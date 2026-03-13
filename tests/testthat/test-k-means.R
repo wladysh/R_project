@@ -47,12 +47,14 @@ test_that("function handles edge cases", {
   expect_equal(res$clusters, 1)
   expect_equal(res$centers, single_point)
   
-  X2 <- rbind(matrix(0, nrow = 2, ncol = 2), matrix(5, nrow = 2, ncol = 2))
-  K2 <- 3
+  X2 <- matrix(1:4, ncol = 2)
+  K2 <- 2
   res <- k_means(X2, K2, nstart = 3)
   
   expect_equal(nrow(res$centers), K2)
   expect_equal(length(res$clusters), nrow(X2))
+  
+  expect_error(k_means(X2, K = 3, nstart = 3), "K invalid")
 })
 
 test_that("k-means changes centers", {
