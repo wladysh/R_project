@@ -1,0 +1,145 @@
+---
+title: "spectral_clustering_vignette"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{spectral_clustering_vignette}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r}
+library(haufenR)
+```
+
+## Spectral Clustering
+
+Spectral clustering is especially useful when the true cluster structure is
+not linearly separable in the original feature space.
+
+A classical example is **concentric circles**:
+the points form two rings around the same center.
+A centroid-based method such as k-means often struggles here,
+because both rings have the same center, while spectral clustering can use
+the graph structure of the data.
+
+## Example: Concentric circles
+
+We first generate a synthetic dataset with two noisy circles.
+
+```{r}
+set.seed(123)
+
+n_inner <- 150
+n_outer <- 150
+
+theta_inner <- runif(n_inner, 0, 2 * pi)
+theta_outer <- runif(n_outer, 0, 2 * pi)
+
+r_inner <- rnorm(n_inner, mean = 1, sd = 0.08)
+r_outer <- rnorm(n_outer, mean = 3, sd = 0.12)
+
+inner <- cbind(r_inner * cos(theta_inner), r_inner * sin(theta_inner))
+outer <- cbind(r_outer * cos(theta_outer), r_outer * sin(theta_outer))
+
+X <- rbind(inner, outer)
+truth <- c(rep(1, n_inner), rep(2, n_outer))
+
+plot(X, col = truth, pch = 19, asp = 1,
+     main = "Ground truth: two concentric circles")
+```
+
+## Apply k-means
+
+We first apply k-means with two clusters.
+
+```{r}
+set.seed(123)
+res_km <- k_means(X, K = 2, nstart = 10)
+
+plot(X, col = res_km$clusters, pch = 19, asp = 1,
+     main = "k_means on concentric circles")
+points(res_km$centers, pch = 8, cex = 2)
+```
+
+We can already see that k-means tends to split the circles incorrectly,
+because it prefers compact spherical clusters around centroids.
+
+## Apply spectral clustering
+
+Now we apply spectral clustering with an RBF affinity graph and the
+symmetric normalized Laplacian.
+
+```{r}
+res_sc <- spectral_clustering(
+  X,
+  k = 2,
+  affinity = "rbf",
+  sigma = 0.6,
+  laplacian = "sym",
+  normalize_rows = TRUE,
+  seed = 123
+)
+
+plot(X, col = res_sc$clusters, pch = 19, asp = 1,
+     main = "spectral_clustering on concentric circles")
+```
+
+## Side-by-side comparison
+
+```{r}
+par(mfrow = c(1, 2))
+
+plot(X, col = res_km$clusters, pch = 19, asp = 1,
+     main = "k_means")
+points(res_km$centers, pch = 8, cex = 2)
+
+plot(X, col = res_sc$clusters, pch = 19, asp = 1,
+     main = "spectral_clustering")
+
+par(mfrow = c(1, 1))
+```
+
+The difference is now much clearer:
+- `k_means()` typically cuts the data into two halves,
+- `spectral_clustering()` can recover the two rings.
+
+## Simple label-invariant accuracy check
+
+Because clustering labels are arbitrary, we compare both possible labelings.
+
+```{r}
+cluster_accuracy_2 <- function(pred, truth) {
+  acc1 <- mean(pred == truth)
+  acc2 <- mean(pred == (3 - truth))
+  max(acc1, acc2)
+}
+
+acc_km <- cluster_accuracy_2(res_km$clusters, truth)
+acc_sc <- cluster_accuracy_2(res_sc$clusters, truth)
+
+acc_km
+acc_sc
+```
+
+In this example, spectral clustering should achieve a much better result than
+k-means, because the graph-based representation captures the ring structure.
+
+## Inspect the spectral embedding
+
+The returned object also contains the low-dimensional embedding used for the
+final clustering step.
+
+```{r}
+head(res_sc$embedding)
+res_sc$eigenvalues
+```
+
+This embedding is what makes the nonlinear cluster structure easier to
+separate.
