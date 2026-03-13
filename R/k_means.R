@@ -6,13 +6,13 @@
 ## 4) Test if the algorithm has converged
 ## 5) Calculate the total within-cluster sum of squares
 
+
 ## --- Helpers ---
 
 # Distance
 mn_sq_euclidean_distance <- function(X, centers) {
   rowSums((centers - X)^2) 
 }
-
 
 # Assign the Clusters
 mn_assign_clusters <- function(X, centers) {
@@ -25,7 +25,6 @@ mn_assign_clusters <- function(X, centers) {
   
   clusters
 }
-
 
 # Update the Centers
 mn_update_centers <- function(X, clusters, K) {
@@ -46,7 +45,6 @@ mn_update_centers <- function(X, clusters, K) {
   centers
 }
 
-
 # Test if converged
 mn_has_converged <- function(old_centers, new_centers, tol = 1e-6) {
   sum((new_centers - old_centers)^2) < tol
@@ -62,21 +60,37 @@ mn_tot_withinss <- function(X, clusters, centers){
 
 ## --- main function ---
 
-#' k-means algorithm
+#' K-Means clustering algorithm
 #' 
-#' This function implements the k-means clustering algorithm. (Chapter 9.1, Stefan Richter - Statistisches und maschinelles Lernen)
+#' This is an implementation of the k-means clustering algorithm. (see Chapter 9.1, Stefan Richter - Statistisches und maschinelles Lernen)
+#' It partitions a numeric data set into K clusters by iteratively assigning points to the nearest cluster center and updating the centers until convergence.
 #' It supports multiple random starts to find a better local minimum.
 #' 
-#' @param X Numeric matrix or data frame of size n x d
-#' @param K Number of Clusters
+#' @param X Numeric matrix or data.frame containing the dataset of size n x d
+#' @param K Number of clusters
 #' @param max_iter Maximum number of iterations (default 100)
 #' @param tol Convergence tolerance (default 1e-6)
 #' @param nstart Number of random starts (default 10)
+#' 
 #' @return A list with following elements:
 #' \item{centers}{Matrix of cluster centers (K x d)}
 #' \item{clusters}{Vector of cluster assignments for each observation}
 #' \item{iter}{Number of iterations until convergence}
 #' \item{tot_withinss}{Total within-cluster sum of squares}
+#' 
+#' @examples
+#' set.seed(1)
+#' X <- rbind(matrix(rnorm(10*2, mean = 0), ncol = 2),
+#'            matrix(rnorm(10*2, mean = 5), ncol = 2))
+#'            
+#' res <- k_means(X, K = 2)
+#' res$centers
+#' res$clusters
+#' 
+#' #Visualize clusters and centers
+#' plot(X, col = res$clusters, pch = 19)
+#' points(res$centers, col = 1:2, pch = 8)
+#' 
 #' @export
 k_means <- function(X, K, max_iter = 100, tol = 1e-6, nstart = 10) {
   
