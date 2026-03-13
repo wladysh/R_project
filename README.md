@@ -14,6 +14,8 @@ devtools::load_all()
 
 ## Quick start
 
+Assume that `X` is a numeric data matrix with observations in rows.
+
 ```r
 
 # k-means
@@ -23,7 +25,16 @@ devtools::load_all()
 ...
 
 # spectral clustering
-...
+res_sc <- spectral_clustering(
+  X,
+  k = 2,
+  affinity = "rbf",
+  sigma = 0.6,
+  laplacian = "sym",
+  seed = 123
+)
+
+head(res_sc$clusters)
 
 # DBSCAN
 ...
