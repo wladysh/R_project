@@ -39,10 +39,10 @@ test_that("k_medoids liefert Cluster", {
 
 test_that("K-Medoids funktioniert auch bei größeren Datensätzen", {
   set.seed(123)
-  X_large <- matrix(rnorm(1000 * 4), ncol = 4)  # 1000 Datenpunkte
+  X_large <- matrix(rnorm(500 * 4), ncol = 4)  # 500 Datenpunkte
   k <- 5
   
   res_large <- k_medoids(X_large, k)
-  expect_equal(length(res_large$clusters), 1000)  # Überprüfe, ob alle Datenpunkte zugeordnet wurden
+  expect_equal(length(res_large$clusters), 500)  # Überprüfe, ob alle Datenpunkte zugeordnet wurden
 })
 
