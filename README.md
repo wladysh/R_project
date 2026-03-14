@@ -21,8 +21,12 @@ Assume that `X` is a numeric data matrix with observations in rows.
 # k-means
 ...
 
+
+
 # k-medoids
 ...
+
+
 
 # Spectral Clustering
 
@@ -37,13 +41,17 @@ res_sc <- spectral_clustering(
 
 head(res_sc$clusters)
 
-# hierarchical clustering
+
+
+# Hierarchical Clustering
 
 set.seed(123)
 x <- matrix(rnorm(40), ncol = 2)
 res_hc <- hc_hierarchical_clustering(x, k = 3, linkage = "average")
 table(res_hc$clusters)
 plot(res_hc)
+
+
 
 # DBSCAN
 
@@ -63,6 +71,8 @@ res_db <- dbscan(x, eps = 0.25, minPts = 3)
 
 print(res_db)
 plot(res_db, x)
+
+
 
 # OPTICS
 
@@ -87,7 +97,7 @@ plot(res_opt)
 
 ## Documentation
 
-Use `?hc_hierarchical_clustering`, `?spectral_clustering`, `?dbscan`, and `?optics` for help pages.  
+Use `?hc_hierarchical_clustering`, `?spectral_clustering`, `?dbscan` and `?optics` for help pages.  
 See `vignettes/` for longer usage examples, including hierarchical clustering.
 
 ## Team
