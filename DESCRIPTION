@@ -2,7 +2,13 @@ Package: haufenR
 Type: Package
 Title: Clustering Algorithms Implemented From Scratch
 Version: 0.0.0.9000
-Authors@R: person("Stroikov", role = c("aut", "cre"), email = "ivanstroikov2004@gmail.com")
+Authors@R: c(
+    person("Ivan", "Stroikov", role = c("aut", "cre"), email = "ivanstroikov2004@gmail.com"),
+    person("Oleksandr", "Pavlov", role = "aut"),
+    person("Vladyslav", "Kyriienko", role = "aut"),
+    person("Aleksandra", "Kosanic", role = "aut"),
+    person("Meryem", "Keskin", role = "aut")
+  )
 Description: Educational implementation of clustering methods (k-means, k-medoids,
     spectral clustering, hierarchical clustering, DBSCAN, OPTICS).
 License: MIT + file LICENSE

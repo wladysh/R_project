@@ -24,7 +24,9 @@ Assume that `X` is a numeric data matrix with observations in rows.
 # k-medoids
 ...
 
-# spectral clustering
+# Spectral Clustering
+
+```r
 res_sc <- spectral_clustering(
   X,
   k = 2,
@@ -35,18 +37,55 @@ res_sc <- spectral_clustering(
 )
 
 head(res_sc$clusters)
+```
 
 # DBSCAN
-...
+
+```r
+x <- rbind(
+  c(0.00, 0.00),
+  c(0.10, 0.05),
+  c(-0.05, 0.10),
+  c(0.05, -0.10),
+  c(2.00, 0.00),
+  c(2.10, 0.05),
+  c(1.95, 0.10),
+  c(2.05, -0.10),
+  c(1.00, 1.50)
+)
+
+res_db <- dbscan(x, eps = 0.25, minPts = 3)
+
+print(res_db)
+plot(res_db, x)
+```
 
 # OPTICS
-...
+
+```r
+x <- rbind(
+  c(0.00, 0.00),
+  c(0.10, 0.05),
+  c(-0.05, 0.10),
+  c(0.05, -0.10),
+  c(2.00, 0.00),
+  c(2.10, 0.05),
+  c(1.95, 0.10),
+  c(2.05, -0.10),
+  c(1.00, 1.50)
+)
+
+res_opt <- optics(x, eps = 0.30, minPts = 3)
+
+print(res_opt)
+plot(res_opt)
+```
 
 ```
 
 ## Documentation
 
-Use `?<>`, `?<>`, ... for help pages.  
+Use `?dbscan`, `?optics` for help pages. 
 See `vignettes/` for longer usage examples.
 
 ## Team
