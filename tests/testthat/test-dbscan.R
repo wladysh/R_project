@@ -130,3 +130,40 @@ test_that("dbscan warns on large n ", {
   expect_true(all(res$clusters == 0L))
   expect_true(all(res$core == FALSE))
 })
+
+test_that("plot.haufenR_dbscan validates plot input", {
+  x <- rbind(
+    c(0.00, 0.00),
+    c(0.01, 0.00),
+    c(0.00, 0.01),
+    c(1.00, 1.00)
+  )
+
+  res <- dbscan(x, eps = 0.03, minPts = 2)
+
+  # missing y
+  expect_error(plot(res))
+
+  # wrong type
+  expect_error(plot(res, 123))
+
+  # NA
+  x_na <- x
+  x_na[2, 1] <- NA
+  expect_error(plot(res, x_na))
+
+  # non-numeric column
+  df_bad <- data.frame(
+    a = c(0.00, 0.01, 0.00, 1.00),
+    b = c("a", "b", "c", "d")
+  )
+  expect_error(plot(res, df_bad))
+
+  # wrong number of rows
+  x_short <- x[1:3, , drop = FALSE]
+  expect_error(plot(res, x_short))
+
+  # less than 2 columns
+  x_one_col <- x[, 1, drop = FALSE]
+  expect_error(plot(res, x_one_col))
+})

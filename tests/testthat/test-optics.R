@@ -128,3 +128,26 @@ test_that("optics warns on large n (full distance matrix O(n^2))", {
   expect_true(all(is.infinite(res$reachability)))
   expect_true(all(is.infinite(res$core_dist)))
 })
+
+test_that("plot.haufenR_optics validates reachability input", {
+  # empty result
+  res_empty <- structure(
+    list(
+      order = integer(0),
+      reachability = numeric(0),
+      core_dist = numeric(0),
+      eps = 1,
+      minPts = 2L,
+      core_count = 0L,
+      start_points_count = 0L,
+      n = 0L
+    ),
+    class = "haufenR_optics"
+  )
+  expect_error(plot(res_empty))
+
+  # all Inf reachability
+  x <- matrix(c(0.00, 0.10, 0.20), ncol = 1)
+  res_inf <- optics(x, eps = 1e-6, minPts = 2)
+  expect_error(plot(res_inf))
+})
