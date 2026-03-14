@@ -2,7 +2,7 @@
 
 This package implements several clustering methods in R with an emphasis on understandable code written using basic R functions.
 The project is designed to provide simple, reproducible examples of common clustering pipelines.
-The main functions cover: k-means, k-medoids, spectral clustering, DBSCAN, and OPTICS (plus helper utilities and tests).
+The main functions cover: k-means, k-medoids, spectral clustering, hierarchical clustering, DBSCAN, and OPTICS (plus helper utilities and tests).
 
 ## Installation
 
@@ -36,6 +36,14 @@ res_sc <- spectral_clustering(
 )
 
 head(res_sc$clusters)
+
+# hierarchical clustering
+
+set.seed(123)
+x <- matrix(rnorm(40), ncol = 2)
+res_hc <- hc_hierarchical_clustering(x, k = 3, linkage = "average")
+table(res_hc$clusters)
+plot(res_hc)
 
 # DBSCAN
 
@@ -79,8 +87,8 @@ plot(res_opt)
 
 ## Documentation
 
-Use `?dbscan`, `?optics` for help pages. 
-See `vignettes/` for longer usage examples.
+Use `?hc_hierarchical_clustering`, `?dbscan`, and `?optics` for help pages.  
+See `vignettes/` for longer usage examples, including hierarchical clustering.
 
 ## Team
 

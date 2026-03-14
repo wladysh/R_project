@@ -14,7 +14,7 @@ hc_hierarchical_clustering(
 \arguments{
 \item{x}{Numeric matrix or data frame with observations in rows and features in columns.}
 
-\item{k}{Optional integer. If provided, the function also returns a vector of cluster
+\item{k}{Optional integer. If provided, the function also returns cluster
 assignments obtained by cutting the tree into \code{k} clusters.}
 
 \item{linkage}{Character string specifying the linkage rule. One of
@@ -23,20 +23,26 @@ assignments obtained by cutting the tree into \code{k} clusters.}
 \item{metric}{Character string specifying the distance metric. Currently only
 \code{"euclidean"} is supported.}
 }
-\value{
-A list with components:
+\value{A list of class \code{"hclust"} with components:
 \itemize{
-  \item \code{merge}: \code{(n-1) x 2} integer matrix describing the merges (like \code{stats::hclust}).
-  \item \code{height}: numeric vector of length \code{n-1} with merge heights (distances).
+  \item \code{merge}: integer matrix of size \code{(n - 1) x 2} describing the merges.
+  \item \code{height}: numeric vector of merge heights.
   \item \code{order}: integer vector giving a leaf order for plotting.
-  \item \code{clusters}: integer vector of length \code{n} (only if \code{k} is provided).
-  \item \code{linkage}, \code{metric}: the chosen settings.
-}
-}
+  \item \code{labels}: character vector of observation labels.
+  \item \code{method}: the selected linkage method.
+  \item \code{dist.method}: the selected distance metric.
+  \item \code{call}: the matched function call.
+  \item \code{clusters}: integer vector of length \code{n} if \code{k} is provided.
+}}
 \description{
-Builds a hierarchical (agglomerative) clustering tree by repeatedly merging the
-two closest clusters under a chosen linkage criterion. Optionally, the tree can
-be cut into \code{k} clusters.
+Builds a hierarchical clustering tree by repeatedly merging the two closest
+clusters under a chosen linkage criterion. Optionally, the tree can also be
+cut into \code{k} clusters.
+}
+\details{
+The returned object has class \code{"hclust"}, so it can be used with
+\code{plot()} and \code{stats::cutree()}. If \code{k} is supplied, the function
+also adds a \code{clusters} element with the corresponding flat clustering.
 }
 \examples{
 set.seed(1)
