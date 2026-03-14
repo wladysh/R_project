@@ -9,12 +9,6 @@
 ##        - when a neighbor is a core point, add its neighbors too
 ##        - assign border points to the current cluster
 ##	7) return labels + optional metadata (core flags, params)
-##	8) OPTIONAL?
-##        - S3 print, call, plot
-##        - vignette for DBSCAN and OPTICS
-##        - example for DBSCAN and OPTICS
-##        - the possibility of refusing surgery in case of high input
-##        - README.md
 
 
 ## Functions:
