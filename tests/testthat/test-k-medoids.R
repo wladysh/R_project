@@ -1,10 +1,6 @@
 # install.packages("testthat")
 library(testthat)
 
-# Implementierungsdatei
-source("../../R/k_medoids.R")
-
-
 # Beispiel-Test für die Distanzmatrix-Funktion
 test_that("dist_matrix funktioniert korrekt", {
   x <- matrix(c(1, 2, 3, 4), nrow = 2)
