@@ -1,5 +1,5 @@
 ---
-title: "spectral_clustering_vignette"
+title: "Spectral clustering"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{spectral_clustering_vignette}
@@ -7,18 +7,20 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r setup, include = FALSE}
+```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
 ```
 
-```{r}
+## Load package
+
+```{r setup}
 library(haufenR)
 ```
 
-## Spectral Clustering
+## Overview
 
 Spectral clustering is especially useful when the true cluster structure is
 not linearly separable in the original feature space.
@@ -51,8 +53,10 @@ outer <- cbind(r_outer * cos(theta_outer), r_outer * sin(theta_outer))
 X <- rbind(inner, outer)
 truth <- c(rep(1, n_inner), rep(2, n_outer))
 
-plot(X, col = truth, pch = 19, asp = 1,
-     main = "Ground truth: two concentric circles")
+plot(X, col = truth, pch = 19, cex = 0.7, asp = 1,
+     xlab = "x1", ylab = "x2",
+     main = "Ground truth",
+     cex.main = 1)
 ```
 
 ## Apply k-means
@@ -63,9 +67,11 @@ We first apply k-means with two clusters.
 set.seed(123)
 res_km <- k_means(X, K = 2, nstart = 10)
 
-plot(X, col = res_km$clusters, pch = 19, asp = 1,
-     main = "k_means on concentric circles")
-points(res_km$centers, pch = 8, cex = 2)
+plot(X, col = res_km$clusters, pch = 19, cex = 0.7, asp = 1,
+     xlab = "x1", ylab = "x2",
+     main = "k-means",
+     cex.main = 1)
+points(res_km$centers, pch = 8, cex = 1.5)
 ```
 
 We can already see that k-means tends to split the circles incorrectly,
@@ -87,21 +93,28 @@ res_sc <- spectral_clustering(
   seed = 123
 )
 
-plot(X, col = res_sc$clusters, pch = 19, asp = 1,
-     main = "spectral_clustering on concentric circles")
+plot(X, col = res_sc$clusters, pch = 19, cex = 0.7, asp = 1,
+     xlab = "x1", ylab = "x2",
+     main = "Spectral clustering",
+     cex.main = 1)
 ```
 
 ## Side-by-side comparison
 
-```{r}
-par(mfrow = c(1, 2))
+```r
+```{r fig.width=6, fig.height=8}
+par(mfrow = c(2, 1), mar = c(4, 4, 2, 1))
 
-plot(X, col = res_km$clusters, pch = 19, asp = 1,
-     main = "k_means")
-points(res_km$centers, pch = 8, cex = 2)
+plot(X, col = res_km$clusters, pch = 19, cex = 0.7, asp = 1,
+     xlab = "x1", ylab = "x2",
+     main = "k-means",
+     cex.main = 1)
+points(res_km$centers, pch = 8, cex = 1.5)
 
-plot(X, col = res_sc$clusters, pch = 19, asp = 1,
-     main = "spectral_clustering")
+plot(X, col = res_sc$clusters, pch = 19, cex = 0.7, asp = 1,
+     xlab = "x1", ylab = "x2",
+     main = "Spectral clustering",
+     cex.main = 1)
 
 par(mfrow = c(1, 1))
 ```
