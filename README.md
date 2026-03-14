@@ -26,7 +26,6 @@ Assume that `X` is a numeric data matrix with observations in rows.
 
 # Spectral Clustering
 
-```r
 res_sc <- spectral_clustering(
   X,
   k = 2,
@@ -37,11 +36,9 @@ res_sc <- spectral_clustering(
 )
 
 head(res_sc$clusters)
-```
 
 # DBSCAN
 
-```r
 x <- rbind(
   c(0.00, 0.00),
   c(0.10, 0.05),
@@ -58,11 +55,9 @@ res_db <- dbscan(x, eps = 0.25, minPts = 3)
 
 print(res_db)
 plot(res_db, x)
-```
 
 # OPTICS
 
-```r
 x <- rbind(
   c(0.00, 0.00),
   c(0.10, 0.05),
@@ -79,7 +74,6 @@ res_opt <- optics(x, eps = 0.30, minPts = 3)
 
 print(res_opt)
 plot(res_opt)
-```
 
 ```
 
