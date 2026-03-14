@@ -24,7 +24,7 @@ The Package "**haufenR**" implements several clustering methods:<br/>
 1. `k_means`: Partitions data into K clusters based on mean values <br/>
 2. `k_medoids`: A robust alternative to k-Means, using medoids as cluster centers<br/>
 3. `spectral_clustering`: Uses eigenvalues of the similarity matrix to identify clusters<br/>
-4. `hierarchical_clustering`: Produces a dendritic structure of clusters<br/>
+4. `hc_hierarchical_clustering`: Produces a dendritic structure of clusters<br/>
 5. `dbscan`/`optics`: Density-based clustering methods for detecting clusters of arbitrary shape<br/>
 
 ```{r setup}
