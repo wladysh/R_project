@@ -16,17 +16,17 @@ for a core point, including the point itself.}
 }
 \value{
 A list with:
-\describe{
-  \item{clusters}{Integer vector of length n. 0 = noise, 1..K = cluster id.}
-  \item{core}{Logical vector of length n. TRUE for core points.}
-  \item{eps}{The eps used.}
-  \item{minPts}{The minPts used.}
-  \item{clusters_count}{Number of clusters found.}
-  \item{noise_count}{Number of noise points.}
-  \item{cluster_sizes}{Named integer vector: sizes of clusters.}
-  \item{core_count}{Number of core points.}
-  \item{border_count}{Number of border points.}
-  \item{n}{Number of input points.}
+\itemize{
+  \item \code{clusters}: Integer vector of length n. 0 = noise, 1..K = cluster id.
+  \item \code{core}: Logical vector of length n. TRUE for core points.
+  \item \code{eps}: The eps used.
+  \item \code{minPts}: The minPts used.
+  \item \code{clusters_count}: Number of clusters found.
+  \item \code{noise_count}: Number of noise points.
+  \item \code{cluster_sizes}: Named integer vector: sizes of clusters.
+  \item \code{core_count}: Number of core points.
+  \item \code{border_count}: Number of border points.
+  \item \code{n}: Number of input points.
 }
 }
 \description{
@@ -35,6 +35,14 @@ as noise. The number of clusters is not fixed in advance.
 }
 \details{
 For large \code{n}, the function may warn because it computes a full distance matrix (O(n^2)).
+
+Use \code{print(res)} to show a compact summary of the clustering result.
+
+The returned object can be visualized with \code{plot(res, x)}, where
+\code{res} is the object returned by \code{dbscan()} and \code{x} is the
+original input data. The plot uses only the first two columns of \code{x}.
+Filled points indicate core points, open circles indicate border points, and
+crosses indicate noise points.
 }
 \examples{
 x <- matrix(c(
@@ -43,7 +51,9 @@ x <- matrix(c(
   0, 0.1,
   5, 5
 ), ncol = 2, byrow = TRUE)
+
 res <- dbscan(x, eps = 0.2, minPts = 3)
 table(res$clusters)
+plot(res, x)
 
 }

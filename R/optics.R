@@ -23,19 +23,28 @@
 #' for a core point, including the point itself.
 #'
 #' @return A list with:
-#' \describe{
-#'   \item{order}{Integer vector: 1...n (visit order).}
-#'   \item{reachability}{Numeric vector length n. Inf for start points and new regions.}
-#'   \item{core_dist}{Numeric vector length n. Distance to the minPts neighbor within eps, else Inf.}
-#'   \item{eps}{The eps used.}
-#'   \item{minPts}{The minPts used.}
-#'   \item{core_count}{Number of core points.}
-#'   \item{start_points_count}{Number of points with Inf reachability.}
-#'   \item{n}{Number of input points.}
+#' \itemize{
+#'   \item \code{order}: Integer vector: 1...n (visit order).
+#'   \item \code{reachability}: Numeric vector length n. Inf for start points and new regions.
+#'   \item \code{core_dist}: Numeric vector length n. Distance to the minPts neighbor within eps, else Inf.
+#'   \item \code{eps}: The eps used.
+#'   \item \code{minPts}: The minPts used.
+#'   \item \code{core_count}: Number of core points.
+#'   \item \code{start_points_count}: Number of points with Inf reachability.
+#'   \item \code{n}: Number of input points.
 #' }
 #'
 #' @details
 #' For plotting or inspection, usually look at \code{reachability[order]}.
+#' 
+#' Use \code{print(res)} to show a compact summary of the OPTICS result.
+#' 
+#' The returned object can be visualized with \code{plot(res)}, where
+#' \code{res} is the object returned by \code{optics()}. This produces a
+#' reachability plot. Low bars usually indicate dense regions, while higher
+#' bars or \code{Inf} values indicate transitions between regions or start
+#' points of new regions.
+#' 
 #' For large \code{n}, the function may warn because it computes a full distance matrix (O(n^2)).
 #'
 #' @examples
@@ -45,8 +54,10 @@
 #'   0, 0.1,
 #'   5, 5
 #' ), ncol = 2, byrow = TRUE)
+#' 
 #' res <- optics(x, eps = 0.2, minPts = 3)
 #' res$reachability[res$order]
+#' plot(res)
 #'
 #' @export
 
