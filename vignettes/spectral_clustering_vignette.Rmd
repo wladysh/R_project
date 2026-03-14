@@ -2,7 +2,7 @@
 title: "Spectral clustering"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{spectral_clustering_vignette}
+  %\VignetteIndexEntry{Spectral clustering}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
