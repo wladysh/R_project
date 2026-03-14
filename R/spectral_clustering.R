@@ -292,6 +292,3 @@ spectral_clustering <- function(
   if (isTRUE(return_affinity)) out$affinity <- W
   out
 }
-
-#TO-DO:
-# - andere Funktionen in NAMESPACE exportieren
