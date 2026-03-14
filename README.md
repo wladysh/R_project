@@ -87,7 +87,7 @@ plot(res_opt)
 
 ## Documentation
 
-Use `?hc_hierarchical_clustering`, `?dbscan`, and `?optics` for help pages.  
+Use `?hc_hierarchical_clustering`, `?spectral_clustering`, `?dbscan`, and `?optics` for help pages.  
 See `vignettes/` for longer usage examples, including hierarchical clustering.
 
 ## Team
