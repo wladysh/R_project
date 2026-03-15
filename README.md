@@ -30,7 +30,16 @@ points(res_mn$centers, col = 1:3, pch = 8, cex = 2)
 
 
 # k-medoids
-...
+set.seed(123)
+X <- rbind(
+  matrix(rnorm(50*2, mean = 0), ncol = 2),
+  matrix(rnorm(50*2, mean = 3), ncol = 2),
+  matrix(rnorm(50*2, mean = 6), ncol = 2)
+)
+res <- k_medoids(X, k = 3)
+res$medoids
+table(res$clusters)
+plot(X, col = res$clusters, pch = 19)
 
 
 
