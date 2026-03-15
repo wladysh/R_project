@@ -16,8 +16,8 @@ md_dist_matrix <- function(x) {
             "x must not contain NA values" = !anyNA(x)
   )
   
-  # dann wird die Distanzmatrix  mit der euklidischen Distanz berechnet    
-  as.matrix(dist(x, method="euclidean"))
+  # dann wird die Distanzmatrix  mit der euklidischen Distanz berechnet
+  as.matrix(dist(x))
 }
 
 # Indizes von k Medoids auswählen (zufällig)
