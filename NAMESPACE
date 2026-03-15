@@ -1,5 +1,6 @@
 export(k_means)
 export(k_medoids)
+importFrom(stats,dist)
 export(spectral_clustering)
 export(dbscan)
 export(optics)
