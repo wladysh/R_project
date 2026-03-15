@@ -19,7 +19,13 @@ Assume that `X` is a numeric data matrix with observations in rows.
 ```r
 
 # k-means
-...
+
+set.seed(123)
+X <- matrix(rnorm(40), ncol = 2)
+res_mn <- k_means(X, K = 3)
+table(res_mn$clusters)
+plot(X, col = res_mn$clusters, pch = 19, cex = 2, main = "k-means Cluster")
+points(res_mn$centers, col = 1:3, pch = 8, cex = 2)
 
 
 
@@ -97,7 +103,7 @@ plot(res_opt)
 
 ## Documentation
 
-Use `?hc_hierarchical_clustering`, `?spectral_clustering`, `?dbscan` and `?optics` for help pages.  
+Use `?k_means`, `?k_medoids`, `?hc_hierarchical_clustering`, `?spectral_clustering`, `?dbscan` and `?optics` for help pages.  
 See `vignettes/` for longer usage examples, including hierarchical clustering.
 
 ## Team
