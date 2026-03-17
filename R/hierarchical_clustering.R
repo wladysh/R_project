@@ -18,6 +18,25 @@ hc_validate_input <- function(x) {
   x
 }
 
+hc_scale_features <- function(x, scale_features) {
+  if (!is.logical(scale_features) || length(scale_features) != 1 || is.na(scale_features)) {
+    stop("scale_features must be TRUE or FALSE")
+  }
+
+  if (!scale_features) {
+    return(x)
+  }
+
+  x_scaled <- scale(x)
+
+  if (any(!is.finite(x_scaled))) {
+    stop("scaling produced non-finite values; check for zero-variance columns")
+  }
+
+  storage.mode(x_scaled) <- "double"
+  x_scaled
+}
+
 hc_euclidean_distance_matrix <- function(x) {
   s <- rowSums(x^2)
   d2 <- outer(s, s, "+") - 2 * tcrossprod(x)
@@ -35,13 +54,18 @@ hc_linkage_distance <- function(dist_mat, x, members_a, members_b, linkage) {
   if (linkage == "average") {
     return(mean(dist_mat[members_a, members_b, drop = FALSE]))
   }
+  if (linkage == "centroid") {
+    mu_a <- colMeans(x[members_a, , drop = FALSE])
+    mu_b <- colMeans(x[members_b, , drop = FALSE])
+    return(sqrt(sum((mu_a - mu_b)^2)))
+  }
   if (linkage == "ward") {
     size_a <- length(members_a)
     size_b <- length(members_b)
     mu_a <- colMeans(x[members_a, , drop = FALSE])
     mu_b <- colMeans(x[members_b, , drop = FALSE])
-    delta <- (size_a * size_b) / (size_a + size_b) * sum((mu_a - mu_b)^2)
-    return(sqrt(delta))
+
+    return((size_a * size_b) / (size_a + size_b) * sum((mu_a - mu_b)^2))
   }
 
   stop("unsupported linkage: ", linkage)
@@ -112,14 +136,20 @@ hc_cut_tree <- function(merge, k) {
 #' @param k Optional integer. If provided, the function also returns cluster
 #'   assignments obtained by cutting the tree into \code{k} clusters.
 #' @param linkage Character string specifying the linkage rule. One of
-#'   \code{"complete"}, \code{"single"}, \code{"average"}, \code{"ward"}.
+#'   \code{"complete"}, \code{"single"}, \code{"average"}, \code{"centroid"}, \code{"ward"}.
 #' @param metric Character string specifying the distance metric. Currently only
 #'   \code{"euclidean"} is supported.
+#' @param scale_features Logical. If \code{TRUE}, each feature is standardized to
+#'   mean 0 and standard deviation 1 before distances are computed.
 #'
 #' @details
 #' The returned object has class \code{"hclust"}, so it can be used with
 #' \code{plot()} and \code{stats::cutree()}. If \code{k} is supplied, the function
 #' also adds a \code{clusters} element with the corresponding flat clustering.
+#'
+#' If \code{scale_features = TRUE}, clustering is performed on standardized
+#' features. This is useful when variables are measured on different scales or
+#' when no single feature should dominate the dissimilarity computation.
 #'
 #' @return A list of class \code{"hclust"} with components:
 #' \itemize{
@@ -136,15 +166,21 @@ hc_cut_tree <- function(merge, k) {
 #' @examples
 #' set.seed(1)
 #' x <- matrix(rnorm(40), ncol = 2)
-#' res <- hc_hierarchical_clustering(x, k = 3, linkage = "average")
+#' res <- hc_hierarchical_clustering(
+#'   x,
+#'   k = 3,
+#'   linkage = "average",
+#'   scale_features = TRUE
+#' )
 #' table(res$clusters)
 #'
 #' @export
 hc_hierarchical_clustering <- function(
   x,
   k = NULL,
-  linkage = c("complete", "single", "average", "ward"),
-  metric = c("euclidean")
+  linkage = c("complete", "single", "average", "centroid", "ward"),
+  metric = c("euclidean"),
+  scale_features = FALSE
 ) {
   x <- hc_validate_input(x)
 
@@ -154,6 +190,8 @@ hc_hierarchical_clustering <- function(
   if (metric != "euclidean") {
     stop("unsupported metric: ", metric)
   }
+
+  x <- hc_scale_features(x, scale_features)
 
   n <- nrow(x)
 
