@@ -1,11 +1,20 @@
 library(testthat)
 library(haufenR)
 
+same_partition <- function(a, b) {
+  identical(outer(a, a, "=="), outer(b, b, "=="))
+}
+
 test_that("hc_hierarchical_clustering returns correct structure", {
   set.seed(123)
   x <- matrix(rnorm(30 * 2), ncol = 2)
 
-  res <- hc_hierarchical_clustering(x, k = 3, linkage = "complete")
+  res <- hc_hierarchical_clustering(
+    x,
+    k = 3,
+    linkage = "complete",
+    scale_features = TRUE
+  )
 
   expect_s3_class(res, "hclust")
   expect_type(unclass(res), "list")
@@ -31,11 +40,14 @@ test_that("hc_hierarchical_clustering supports all linkage options", {
     5, 6
   ), ncol = 2, byrow = TRUE)
 
-  for (linkage in c("single", "complete", "average", "ward")) {
+  for (linkage in c("single", "complete", "average", "centroid", "ward")) {
     res <- hc_hierarchical_clustering(x, k = 2, linkage = linkage)
     expect_s3_class(res, "hclust")
     expect_equal(length(unique(res$clusters)), 2)
-    expect_true(all(diff(res$height) >= -1e-12))
+
+    if (linkage != "centroid") {
+      expect_true(all(diff(res$height) >= -1e-12))
+    }
   }
 })
 
@@ -73,4 +85,63 @@ test_that("hc_hierarchical_clustering validates x", {
   expect_error(hc_hierarchical_clustering(matrix(c(1, NA, 2, 3), ncol = 2)))
   expect_error(hc_hierarchical_clustering(data.frame(a = c(1, 2), b = c("x", "y"))))
   expect_error(hc_hierarchical_clustering(matrix(c(1, 2), nrow = 1)))
+})
+
+test_that("scale_features makes clustering invariant to unit changes", {
+  x <- matrix(c(
+    0, 1,
+    0, 2,
+    5, 1000,
+    5, 1001
+  ), ncol = 2, byrow = TRUE)
+
+  x_rescaled <- x
+  x_rescaled[, 2] <- x_rescaled[, 2] * 1000
+
+  res1 <- hc_hierarchical_clustering(
+    x,
+    k = 2,
+    linkage = "complete",
+    scale_features = TRUE
+  )
+
+  res2 <- hc_hierarchical_clustering(
+    x_rescaled,
+    k = 2,
+    linkage = "complete",
+    scale_features = TRUE
+  )
+
+  expect_true(same_partition(res1$clusters, res2$clusters))
+})
+
+test_that("scale_features rejects zero-variance columns", {
+  x <- matrix(c(
+    1, 5,
+    2, 5,
+    3, 5,
+    4, 5
+  ), ncol = 2, byrow = TRUE)
+
+  expect_error(
+    hc_hierarchical_clustering(x, scale_features = TRUE),
+    "non-finite"
+  )
+})
+
+test_that("single, complete and average agree with stats::hclust on a small example", {
+  x <- matrix(c(
+    0, 0,
+    0, 1,
+    5, 5,
+    5, 6
+  ), ncol = 2, byrow = TRUE)
+
+  for (method in c("single", "complete", "average")) {
+    ours <- hc_hierarchical_clustering(x, k = 2, linkage = method)
+    theirs <- stats::hclust(stats::dist(x), method = method)
+    theirs_cut <- stats::cutree(theirs, k = 2)
+
+    expect_true(same_partition(ours$clusters, theirs_cut))
+  }
 })
