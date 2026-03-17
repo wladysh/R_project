@@ -62,7 +62,12 @@ head(res_sc$clusters)
 
 set.seed(123)
 x <- matrix(rnorm(40), ncol = 2)
-res_hc <- hc_hierarchical_clustering(x, k = 3, linkage = "average")
+res_hc <- hc_hierarchical_clustering(
+  x,
+  k = 3,
+  linkage = "average",
+  scale_features = TRUE
+)
 table(res_hc$clusters)
 plot(res_hc)
 
@@ -113,6 +118,8 @@ plot(res_opt)
 ## Documentation
 
 Use `?k_means`, `?k_medoids`, `?hc_hierarchical_clustering`, `?spectral_clustering`, `?dbscan` and `?optics` for help pages.  
+The hierarchical clustering implementation supports `single`, `complete`, `average`, `centroid`, and `ward` linkage.  
+Set `scale_features = TRUE` when variables are on very different scales so that no single feature dominates the Euclidean distances.  
 See `vignettes/` for longer usage examples, including hierarchical clustering.
 
 ## Team
