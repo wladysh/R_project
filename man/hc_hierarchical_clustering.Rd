@@ -7,8 +7,9 @@
 hc_hierarchical_clustering(
   x,
   k = NULL,
-  linkage = c("complete", "single", "average", "ward"),
-  metric = c("euclidean")
+  linkage = c("complete", "single", "average", "centroid", "ward"),
+  metric = c("euclidean"),
+  scale_features = FALSE
 )
 }
 \arguments{
@@ -18,12 +19,16 @@ hc_hierarchical_clustering(
 assignments obtained by cutting the tree into \code{k} clusters.}
 
 \item{linkage}{Character string specifying the linkage rule. One of
-\code{"complete"}, \code{"single"}, \code{"average"}, \code{"ward"}.}
+\code{"complete"}, \code{"single"}, \code{"average"}, \code{"centroid"}, \code{"ward"}.}
 
 \item{metric}{Character string specifying the distance metric. Currently only
 \code{"euclidean"} is supported.}
+
+\item{scale_features}{Logical. If \code{TRUE}, each feature is standardized to
+mean 0 and standard deviation 1 before distances are computed.}
 }
-\value{A list of class \code{"hclust"} with components:
+\value{
+A list of class \code{"hclust"} with components:
 \itemize{
   \item \code{merge}: integer matrix of size \code{(n - 1) x 2} describing the merges.
   \item \code{height}: numeric vector of merge heights.
@@ -33,7 +38,8 @@ assignments obtained by cutting the tree into \code{k} clusters.}
   \item \code{dist.method}: the selected distance metric.
   \item \code{call}: the matched function call.
   \item \code{clusters}: integer vector of length \code{n} if \code{k} is provided.
-}}
+}
+}
 \description{
 Builds a hierarchical clustering tree by repeatedly merging the two closest
 clusters under a chosen linkage criterion. Optionally, the tree can also be
@@ -43,11 +49,20 @@ cut into \code{k} clusters.
 The returned object has class \code{"hclust"}, so it can be used with
 \code{plot()} and \code{stats::cutree()}. If \code{k} is supplied, the function
 also adds a \code{clusters} element with the corresponding flat clustering.
+
+If \code{scale_features = TRUE}, clustering is performed on standardized
+features. This is useful when variables are measured on different scales or
+when no single feature should dominate the dissimilarity computation.
 }
 \examples{
 set.seed(1)
 x <- matrix(rnorm(40), ncol = 2)
-res <- hc_hierarchical_clustering(x, k = 3, linkage = "average")
+res <- hc_hierarchical_clustering(
+  x,
+  k = 3,
+  linkage = "average",
+  scale_features = TRUE
+)
 table(res$clusters)
 
 }
