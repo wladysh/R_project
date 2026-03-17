@@ -449,7 +449,12 @@ plot(x, pch = 19, main = "Example data")
 Here we use average linkage and directly request a cut into three clusters.
 
 ```{r fit-tree}
-res <- hc_hierarchical_clustering(x, k = 3, linkage = "average")
+res <- hc_hierarchical_clustering(
+  x,
+  k = 3,
+  linkage = "average",
+  scale_features = TRUE
+)
 
 res$method
 res$dist.method
@@ -473,7 +478,7 @@ head(res$clusters)
 length(unique(res$clusters))
 ```
 
-We# can also color the original points by their assigned cluster.
+We can also color the original points by their assigned cluster.
 
 ```{r scatter-plot}
 plot(x, col = res$clusters, pch = 19, main = "Cut into 3 clusters")
@@ -486,18 +491,21 @@ The same data can be clustered with different linkage rules.
 ```{r linkage-options}
 res_single <- hc_hierarchical_clustering(x, linkage = "single")
 res_complete <- hc_hierarchical_clustering(x, linkage = "complete")
+res_centroid <- hc_hierarchical_clustering(x, linkage = "centroid")
 res_ward <- hc_hierarchical_clustering(x, linkage = "ward")
 
 c(
   single_last_height = tail(res_single$height, 1),
   complete_last_height = tail(res_complete$height, 1),
+  centroid_last_height = tail(res_centroid$height, 1),
   ward_last_height = tail(res_ward$height, 1)
 )
 ```
 
 ### Remarks
 
-The current implementation supports the Euclidean distance metric and the linkage rules `single`, `complete`, `average`, and `ward`.
+The current implementation supports the Euclidean distance metric and the linkage rules `single`, `complete`, `average`, `centroid`, and `ward`.
+If variables are measured on very different scales, `scale_features = TRUE` standardizes them before distances are computed so that one feature does not dominate the clustering.
 Like the other educational implementations in this package, it computes everything directly and is meant to be easy to inspect rather than highly optimized for very large data sets.
 
 <br/>
